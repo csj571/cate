@@ -42,6 +42,7 @@ import { installSubagentExtension } from './installSubagents'
 import { installPlanModeExtension } from './installPlanMode'
 import { agentDirFor, prepareAgentDir, watchWorkspaceAuth, pushSharedToWorkspace } from './agentDir'
 import type { AuthManager } from './authManager'
+import { localProviderManager } from './localProviders'
 
 function resolvePiCliPath(): string {
   return path.join(
@@ -158,6 +159,20 @@ export class AgentManager {
     }
   }
 
+  /** Regenerate models.json in every live session's workspace so newly-probed
+   *  local models become available. Called after a local-provider refresh. */
+  async syncLocalModelsToOpenSessions(): Promise<void> {
+    const cwds = new Set<string>()
+    for (const session of this.sessions.values()) cwds.add(session.cwd)
+    await Promise.all(
+      Array.from(cwds).map((cwd) =>
+        localProviderManager.writeModelsJson(cwd).catch((err) => {
+          log.warn('[agentManager] local-model sync failed for %s: %O', cwd, err)
+        }),
+      ),
+    )
+  }
+
   private withLock<T>(panelId: string, fn: () => Promise<T>): Promise<T> {
     const prev = this.locks.get(panelId) ?? Promise.resolve()
     const next = prev.then(fn, fn)
@@ -178,6 +193,9 @@ export class AgentManager {
       await prepareAgentDir(opts.cwd)
       await installSubagentExtension(opts.cwd)
       await installPlanModeExtension(opts.cwd)
+      // Generate models.json from the user's local-provider config so pi
+      // exposes any locally-served models (Ollama, LM Studio, …) here.
+      await localProviderManager.writeModelsJson(opts.cwd)
 
       const extraArgs: string[] = []
       if (opts.sessionFile) extraArgs.push('--session', opts.sessionFile)

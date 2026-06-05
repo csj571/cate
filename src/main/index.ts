@@ -25,7 +25,9 @@ import { registerHandlers as registerMenuHandlers } from './ipc/menu'
 import { registerHandlers as registerNotificationHandlers } from './ipc/notifications'
 import { registerAgentHandlers } from '../agent/main/ipcAgent'
 import { registerAuthHandlers } from '../agent/main/ipcAuth'
+import { registerLocalProviderHandlers } from '../agent/main/ipcLocalProviders'
 import { authManager } from '../agent/main/authManager'
+import { localProviderManager } from '../agent/main/localProviders'
 import { AgentManager } from '../agent/main/agentManager'
 
 // Shared singletons for pi agent + auth.
@@ -454,6 +456,7 @@ function registerDeferredHandlers(): void {
   registerNotificationHandlers()
   registerAuthHandlers(authManager)
   registerAgentHandlers(authManager, agentManager)
+  registerLocalProviderHandlers(localProviderManager, agentManager)
 }
 
 /** Union of critical + deferred — kept for any callers that want the full set in one call. */

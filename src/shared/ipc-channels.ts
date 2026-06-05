@@ -270,6 +270,12 @@ export const AGENT_MARKETPLACE_LIST_INSTALLED = 'agent:marketplaceListInstalled'
 export const AGENT_MARKETPLACE_INSTALL = 'agent:marketplaceInstall'       // renderer -> main
 export const AGENT_MARKETPLACE_UNINSTALL = 'agent:marketplaceUninstall'   // renderer -> main
 
+// Local model providers (Ollama / LM Studio / OpenAI-compatible servers)
+export const LOCAL_PROVIDERS_LIST = 'localProviders:list'       // renderer -> main ({ config, statuses })
+export const LOCAL_PROVIDERS_SAVE = 'localProviders:save'       // renderer -> main (upsert config)
+export const LOCAL_PROVIDERS_REMOVE = 'localProviders:remove'   // renderer -> main (delete custom provider)
+export const LOCAL_PROVIDERS_REFRESH = 'localProviders:refresh' // renderer -> main (re-probe + push to live agents)
+
 // Pi auth / providers
 export const AUTH_LIST_PROVIDERS = 'auth:listProviders'
 export const AUTH_STATUS = 'auth:status'

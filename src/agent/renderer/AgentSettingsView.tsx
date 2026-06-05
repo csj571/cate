@@ -10,6 +10,7 @@ import { Plus, FolderOpen, ArrowsClockwise, Trash } from '@phosphor-icons/react'
 import log from '../../renderer/lib/logger'
 import { useAppStore } from '../../renderer/stores/appStore'
 import { ProvidersView } from './ProvidersView'
+import { LocalModelsView } from './LocalModelsView'
 import type { AgentSlashCommand } from '../../shared/types'
 
 const TAB_BADGE: Record<'agents' | 'prompts' | 'skills', string> = {
@@ -57,7 +58,7 @@ export function SettingsView({
     const container = scrollRef.current
     if (!container) return
     const handler = () => {
-      const ids = ['providers', 'agents', 'prompts', 'skills', 'extensions']
+      const ids = ['providers', 'local models', 'agents', 'prompts', 'skills', 'extensions']
       let closest = ids[0]
       let closestDist = Infinity
       for (const id of ids) {
@@ -131,7 +132,7 @@ export function SettingsView({
 
   const [refreshNonce, setRefreshNonce] = useState(0)
 
-  const sections = ['Providers', 'Agents', 'Prompts', 'Skills', 'Extensions'] as const
+  const sections = ['Providers', 'Local models', 'Agents', 'Prompts', 'Skills', 'Extensions'] as const
 
   const renderSkillSection = (
     kind: 'agents' | 'prompts' | 'skills',
@@ -250,6 +251,11 @@ export function SettingsView({
         <div ref={(el) => { sectionRefs.current['providers'] = el }}>
           <div className="text-[13px] font-semibold text-primary mb-3">Providers</div>
           <ProvidersView embedded scopedProviderId={scopedProviderId} availableModels={availableModels} />
+        </div>
+
+        <div ref={(el) => { sectionRefs.current['local models'] = el }}>
+          <div className="text-[13px] font-semibold text-primary mb-3">Local models</div>
+          <LocalModelsView />
         </div>
 
         <div ref={(el) => { sectionRefs.current['agents'] = el }}>

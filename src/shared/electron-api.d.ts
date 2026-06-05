@@ -2,7 +2,7 @@
 // Type declaration for window.electronAPI exposed via contextBridge
 // =============================================================================
 
-import type { AgentCreateOptions, AgentEventEnvelope, AgentExtensionUIResponse, AgentImageAttachment, AgentModelRef, AgentRpcState, AgentSessionListEntry, AgentSessionStats, AgentSlashCommand, AgentThinkingLevel, AgentToolApprovalRequest, AppSettings, AgentState, AuthProviderDescriptor, AuthProviderStatus, CateWindowParams, DockWindowInitPayload, DetachedDockWindowSnapshot, DockStateSnapshot, FileSearchOptions, FileSearchResult, FileTreeNode, GitInfo, NotificationAction, OAuthFlowEvent, PanelState, PanelTransferSnapshot, PanelWindowSnapshot, PerfSnapshot, Point, SessionSnapshot, TerminalActivity, WorkspaceInfo, WorkspaceMutationResult } from './types'
+import type { AgentCreateOptions, AgentEventEnvelope, AgentExtensionUIResponse, AgentImageAttachment, AgentModelRef, AgentRpcState, AgentSessionListEntry, AgentSessionStats, AgentSlashCommand, AgentThinkingLevel, AgentToolApprovalRequest, AppSettings, AgentState, AuthProviderDescriptor, AuthProviderStatus, LocalProviderConfig, LocalProviderStatus, CateWindowParams, DockWindowInitPayload, DetachedDockWindowSnapshot, DockStateSnapshot, FileSearchOptions, FileSearchResult, FileTreeNode, GitInfo, NotificationAction, OAuthFlowEvent, PanelState, PanelTransferSnapshot, PanelWindowSnapshot, PerfSnapshot, Point, SessionSnapshot, TerminalActivity, WorkspaceInfo, WorkspaceMutationResult } from './types'
 
 export interface NativeContextMenuItem {
   id?: string
@@ -839,6 +839,22 @@ export interface ElectronAPI {
 
   /** Disconnect a provider (clears stored credentials). */
   authDelete(providerId: string): Promise<void>
+
+  // ---------------------------------------------------------------------------
+  // Local model providers (Ollama / LM Studio / OpenAI-compatible servers)
+  // ---------------------------------------------------------------------------
+
+  /** List configured local providers plus their last-known probe statuses. */
+  localProvidersList(): Promise<{ config: LocalProviderConfig[]; statuses: LocalProviderStatus[] }>
+
+  /** Add or update a local provider (base URL / enabled / custom endpoint). */
+  localProvidersSave(config: LocalProviderConfig): Promise<void>
+
+  /** Remove a custom local provider (built-ins can only be disabled). */
+  localProvidersRemove(id: string): Promise<void>
+
+  /** Re-probe every enabled provider and push fresh models into live agents. */
+  localProvidersRefresh(): Promise<LocalProviderStatus[]>
 }
 
 declare global {

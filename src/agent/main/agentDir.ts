@@ -33,6 +33,18 @@ export function sharedAuthPath(): string {
   return path.join(app.getPath('userData'), PI_AGENT_DIR, 'auth.json')
 }
 
+/** User's local-provider config (Ollama/LM Studio/custom). Global, not
+ *  per-workspace — a local server isn't project-specific. */
+export function localProvidersConfigPath(): string {
+  return path.join(app.getPath('userData'), PI_AGENT_DIR, 'local-providers.json')
+}
+
+/** The pi models.json inside a workspace's agent dir. Cate generates this from
+ *  the local-provider config so pi exposes locally-served models. */
+export function workspaceModelsPath(cwd: string): string {
+  return path.join(agentDirFor(cwd), 'models.json')
+}
+
 function workspaceAuthPath(cwd: string): string {
   return path.join(agentDirFor(cwd), 'auth.json')
 }

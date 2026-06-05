@@ -991,6 +991,50 @@ export interface AgentModelRef {
   model: string
 }
 
+// ---------------------------------------------------------------------------
+// Local model providers (Ollama / LM Studio / any OpenAI-compatible server)
+//
+// These run entirely on the user's machine. Unlike the built-in cloud
+// providers (which authenticate via auth.json), local providers are described
+// by a base URL and surfaced to pi through a generated models.json. See
+// src/agent/main/localProviders.ts.
+// ---------------------------------------------------------------------------
+
+/** How we talk to a local server: 'ollama' uses /api/tags for discovery,
+ *  'openai' uses the OpenAI-compatible /v1/models endpoint (LM Studio, vLLM,
+ *  llama.cpp, LiteLLM, …). Both serve chat over an OpenAI-compatible /v1. */
+export type LocalProviderKind = 'ollama' | 'openai'
+
+export interface LocalProviderConfig {
+  /** pi provider key — also the models.json provider id (e.g. 'ollama'). */
+  id: string
+  /** Display name. */
+  name: string
+  kind: LocalProviderKind
+  /** Server root, without a trailing /v1 (e.g. 'http://localhost:11434'). */
+  baseUrl: string
+  /** Disabled providers are skipped during discovery and omitted from pi. */
+  enabled: boolean
+  /** Built-in defaults (ollama, lmstudio) can be disabled but not removed. */
+  builtin?: boolean
+}
+
+/** A model discovered on a reachable local server. */
+export interface LocalDiscoveredModel {
+  id: string
+  name?: string
+  contextWindow?: number
+}
+
+/** Live probe result for a local provider. */
+export interface LocalProviderStatus {
+  id: string
+  reachable: boolean
+  models: LocalDiscoveredModel[]
+  /** Populated when the probe failed (connection refused, timeout, …). */
+  error?: string
+}
+
 /** Slash command exposed by pi — a skill, prompt template, or extension cmd. */
 export interface AgentSlashCommand {
   name: string

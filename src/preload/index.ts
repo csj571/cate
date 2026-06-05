@@ -191,9 +191,13 @@ import {
   AUTH_OAUTH_EVENT,
   AUTH_SAVE_API_KEY,
   AUTH_DELETE,
+  LOCAL_PROVIDERS_LIST,
+  LOCAL_PROVIDERS_SAVE,
+  LOCAL_PROVIDERS_REMOVE,
+  LOCAL_PROVIDERS_REFRESH,
   PERF_GET,
 } from '../shared/ipc-channels'
-import type { AppSettings } from '../shared/types'
+import type { AppSettings, LocalProviderConfig } from '../shared/types'
 
 // Cache native-fullscreen state so renderer drag handlers can synchronously
 // check it without an IPC round-trip on every mousemove. Main BROADCASTS
@@ -1301,6 +1305,26 @@ contextBridge.exposeInMainWorld('electronAPI', {
 
   authDelete(providerId: string): Promise<void> {
     return ipcRenderer.invoke(AUTH_DELETE, providerId)
+  },
+
+  // ---------------------------------------------------------------------------
+  // Local model providers (Ollama / LM Studio / OpenAI-compatible)
+  // ---------------------------------------------------------------------------
+
+  localProvidersList(): Promise<unknown> {
+    return ipcRenderer.invoke(LOCAL_PROVIDERS_LIST)
+  },
+
+  localProvidersSave(config: LocalProviderConfig): Promise<void> {
+    return ipcRenderer.invoke(LOCAL_PROVIDERS_SAVE, config)
+  },
+
+  localProvidersRemove(id: string): Promise<void> {
+    return ipcRenderer.invoke(LOCAL_PROVIDERS_REMOVE, id)
+  },
+
+  localProvidersRefresh(): Promise<unknown> {
+    return ipcRenderer.invoke(LOCAL_PROVIDERS_REFRESH)
   },
 
 })
